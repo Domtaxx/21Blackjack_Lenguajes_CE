@@ -1,7 +1,12 @@
-*.ss~
-*.ss#*
-.#*.ss
+# DrRacket autosave files
+*.rkt~
+*.rkt.bak
+\#*.rkt#
+\#*.rkt#*#
 
-*.scm~
-*.scm#*
-.#*.scm
+# Compiled racket bytecode
+compiled/
+*.zo
+
+# Dependency tracking files
+*.dep
