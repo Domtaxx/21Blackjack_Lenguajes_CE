@@ -4,6 +4,7 @@
 (provide (all-defined-out))
 
 
+
 (define image1 (make-object bitmap% "Blackjack.jpg"))
 (define my-frame  (new frame% [label "Black CE Jack"]
        [width 300]
@@ -50,4 +51,5 @@
                     [horiz-margin 20]))
 
 
-(send my-frame show #t)
+(define (start-game) (send my-frame show #t))
+
