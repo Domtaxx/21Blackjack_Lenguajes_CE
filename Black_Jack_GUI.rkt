@@ -4,7 +4,6 @@
 (provide (all-defined-out))
 
 
-
 (define image1 (make-object bitmap% "Blackjack.jpg"))
 (define my-frame  (new frame% [label "Black CE Jack"]
        [width 300]
@@ -45,11 +44,11 @@
        [parent row1]
        [style '(horizontal)]))
 
+(define drawer (send mcan get-dc))
+
 (define stay (new button%
                     [parent row1]
                     [label "Plantarse"]
-                    [horiz-margin 20]))
-
-
-(define (start-game) (send my-frame show #t))
-
+                    [horiz-margin 20]
+                    [callback (lambda (button event) (send drawer erase))]))
+(send my-frame show #t)
