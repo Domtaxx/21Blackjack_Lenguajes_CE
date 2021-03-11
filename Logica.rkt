@@ -1,5 +1,5 @@
 #lang racket 
-(require "Black_Jack_GUI.rkt")
+;(require "Black_Jack_GUI.rkt")
 ;lista de jugadores((cards-available) ((jugado1 (cartas) state) (jugador2 (cartas) state) ...) )
 (define (BCEj List)
   (append (list (shuffle(give-deck 51))) (list (BCEj-aux List  '())))
@@ -50,17 +50,17 @@
 
 ;
 (define (pass-turn board-list)
-  (pass-turn-aux (get-deck board-list) (get-players board-list))
+  (set-state (get-deck board-list) (get-players board-list) #t)
 )
 
-(define (pass-turn-aux deck player-list)
+(define (set-state deck player-list state)
   (append
    (list deck)
    (list {append (other-players player-list)
            (list(list
                  (current-player-name player-list)
                  (current-player-cards player-list)
-                 (get-player-state player-list)
+                 state
            ))
    }
   ))
@@ -123,12 +123,18 @@
    (else
      (append (list n) (give-deck (- n 1)))
    )
-   
-  
-
  )
 )
+
+(define (set-stay board-list)
+
+   (set-state (get-deck board-list) (get-players board-list) #f)
+  
+)
+
+
+
+
 (define a (BCEj '(Brian Brian2 Brian3)))
 (hand-out a 2)
-;(pass-turn)
 
