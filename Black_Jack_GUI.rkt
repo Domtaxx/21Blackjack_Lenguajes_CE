@@ -2,6 +2,7 @@
 
 (require 2htdp/image)
 (provide (all-defined-out))
+(define board-list '())
 
 (define image1 (make-object bitmap% "Blackjack.jpg"))
 (define my-frame  (new frame% [label "Black CE Jack"]
@@ -30,8 +31,6 @@
        [stretchable-height #f]
        [horiz-margin 220]))
 
-
-
 (define ask-card (new button%
                     [parent row1]
                     [label "Pedir carta"]
@@ -43,6 +42,8 @@
        [choices '("1" "11")]
        [parent row1]
        [style '(horizontal)]))
+
+
 (define drawer (send mcan get-dc))
 (define stay (new button%
                     [parent row1]
