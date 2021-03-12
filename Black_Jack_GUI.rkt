@@ -1,6 +1,5 @@
 #lang racket/gui
 
-;(require 2htdp/image)
 (require "Logica.rkt")
 (require 2htdp/image
          (only-in mrlib/image-core render-image))
@@ -66,7 +65,6 @@
 
 
 (define (load-bitmap path factor)
-  ;(make-object bitmap% path)
   (scale factor (bitmap/file path))
 )
 
@@ -74,5 +72,10 @@
   (render-image (load-bitmap path factor) drawer x y)
 )
 
+
+(define (BCEj players)
+  (set! board-list (start-game players))
+  1
+)
 
 (send my-frame show #t)
