@@ -6,7 +6,7 @@
 (provide (all-defined-out))
 (define board-list '())
 (define player-list '())
-(define positions '((400 100) (0 0) (200 300) (380 300)))
+(define positions '((350 100) (130 290) (350 320) (580 290)))
 (define image1 (make-object bitmap% "Blackjack.jpg"))
 (define my-frame  (new frame% [label "Black CE Jack"]
        [width 300]
@@ -45,7 +45,7 @@
                     [callback (lambda (button event)
                                 (set! board-list (hand-out board-list 1))
                                 (write board-list)
-                                (write "_______________________________________________________________________________________________________________________________")
+                                (draw-everyone-cards (get-players board-list))
 
                            )]
                     ))
@@ -57,12 +57,11 @@
                     [callback (lambda (button event)
 
                                 (set! board-list (set-stay board-list))
-                                (write board-list)
-                                (write "_______________________________________________________________________________________________________________________________")
-
+                                (draw-everyone-cards (get-players board-list))
 
 
                     )]))
+
 
 (define pass (new button%
                     [parent row1]
@@ -70,13 +69,16 @@
                     [horiz-margin 20]
                     [callback (lambda (button event)
                                 (set! board-list (pass-turn board-list))
-                                (write board-list)
-                                (write "_______________________________________________________________________________________________________________________________")
-
+                                (draw-everyone-cards (get-players board-list))
 
                                 )]))
 
-
+(define show-cards (new button%
+                    [parent row1]
+                    [label "Repartir"]
+                    [horiz-margin 20]
+                    [callback (lambda (button event) (draw-everyone-cards (get-players board-list))
+                    )]))
 (define drawer (send mcan get-dc))
 
 
@@ -104,7 +106,7 @@
 (define (draw-cards card-list X Y)
   (cond
     ((empty? card-list) '())
-    (else (draw-image (create-path (car card-list)) X Y 0.4)
+    (else (draw-image (create-path (car card-list)) X Y 0.38)
           (draw-cards (cdr card-list) (+ X 15) Y)
 
 
