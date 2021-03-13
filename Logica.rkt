@@ -1,9 +1,10 @@
 #lang racket 
 ;(require "Black_Jack_GUI.rkt")
 ;lista de jugadores((cards-available) ((jugado1 (cartas) state) (jugador2 (cartas) state) ...) )
+ (require racket/trace)
 (provide (all-defined-out))
 (define (BCEj1 List)
-  (append (list (shuffle(give-deck 51))) (list (BCEj-aux (append '(crupier) List)  '())))
+  (append (list (shuffle(give-deck 51))) (list (BCEj-aux (append '(crupier) List ) '())))
 )
 
 (define (BCEj-aux List newList)
@@ -89,13 +90,13 @@
 (define (set-state deck player-list state)
   (append
    (list deck)
-   (list {append (other-players player-list)
+   (list {append 
            (list(list
                  (current-player-name player-list)
                  (current-player-cards player-list)
                  state
            ))
-          
+          (other-players player-list)
    }
   ))
 )
@@ -161,7 +162,7 @@
   )
 )
 
-(define (get-scores players)
+(define (get-scores players) 
   (cond
     ((empty? players) '())
     (else
@@ -179,6 +180,7 @@
   )
     
 )
+
 
 (define (add-card-values cards)
   (cond
@@ -254,7 +256,36 @@
         (else (filtro condicion (cdr List)))
     )
 )
+(define (sort_scores List)
+  (reverse (sort_scores_aux List))
+)
+(define (sort_scores_aux List)
+    (cond
+        ((null? List) '())
+        (else   
+            (append
+             (sort_scores_aux (filtro_scores (lambda (x) (<= x (cadar List))) (cdr List)))
+             (list (car List))
+             (sort_scores_aux (filtro_scores (lambda (x) (> x (cadar List))) (cdr List))))
+        )
+    )
+)
 
+(define (filtro_scores condicion List)
+    (cond
+        ((null? List) '())
+        ((condicion (cadar List)) (cons (car List) (filtro_scores condicion (cdr List))))
+        (else (filtro_scores condicion (cdr List)))
+    )
+)
+(define (get-n-data List n)
+  (cond
+    ((zero? n) '())
+    (else (cons (car List) (get-n-data (cdr List) (- n 1))))
+
+
+  )
+)
 ;(define a (BCEj1 '(Brian Brian2 Brian3)))
 ;(hand-out a 2)
 ;(hand-out-circle a 8)
