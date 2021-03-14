@@ -63,11 +63,14 @@
 
 
 (define (pass-turn board-list)
-  (change-player-list board-list
-                      (pass-turn-aux (get-players board-list) #f)
-                      )
+  (cond
+    ((everyone-done? (get-players board-list)) board-list)
+    (else
+     (change-player-list board-list
+                      (pass-turn-aux (get-players board-list) #f))
+    )
+  )
 )
-  ;(set-state (get-deck board-list) (get-players board-list) #t)
   
 
 (define (pass-turn-aux players done)
@@ -152,15 +155,9 @@
 )
 
 (define (set-stay board-list)
-  (cond
-    ((everyone-done? (get-players board-list))
-     (get-scores (get-players board-list))
-    )
-    (else
-     (pass-turn (set-state (get-deck board-list) (get-players board-list) #f))
-    )
-  )
+  (pass-turn (set-state (get-deck board-list) (get-players board-list) #f))
 )
+
 
 (define (get-scores players) 
   (cond
@@ -172,6 +169,14 @@
              (evaluate-as (add-card-values (current-player-cards players))
                           (char-appearances (current-player-cards players) 0)
              )
+             (-
+              {evaluate-as
+                         (add-card-values (current-player-cards players))
+                         (char-appearances (current-player-cards players) 0)
+              }21
+             )
+             
+             (length (current-player-cards players))
             )
       )
       (get-scores (other-players players))
@@ -180,7 +185,6 @@
   )
     
 )
-
 
 (define (add-card-values cards)
   (cond
@@ -237,56 +241,102 @@
 
 
 
-(define (quicksort List)
+(define (quicksort List n)
     (cond
         ((null? List) '())
         (else   
             (append
-             (quicksort (filtro (lambda (x) (<= x (car List))) (cdr List)))
+             (quicksort (filtro (lambda (x) (<= x (get-data-by-pos (car List) n))) (cdr List) n) n)
              (list (car List))
-             (quicksort (filtro (lambda (x) (> x (car List))) (cdr List))))
+             (quicksort (filtro (lambda (x) (> x (get-data-by-pos (car List) n))) (cdr List) n) n))
         )
     )
 )
 
-(define (filtro condicion List)
+(define (filtro condicion List n)
     (cond
         ((null? List) '())
-        ((condicion (car List)) (cons (car List) (filtro condicion (cdr List))))
-        (else (filtro condicion (cdr List)))
+        ((condicion (get-data-by-pos (car List) n)) (cons (car List) (filtro condicion (cdr List) n)))
+        (else (filtro condicion (cdr List) n))
     )
 )
-(define (sort_scores List)
-  (reverse (sort_scores_aux List))
+(define (sort-scores List)
+   (quicksort List 2)
 )
+
+
+#|
 (define (sort_scores_aux List)
     (cond
         ((null? List) '())
         (else   
             (append
-             (sort_scores_aux (filtro_scores (lambda (x) (<= x (cadar List))) (cdr List)))
+             (sort_scores_aux (filtro-scores (lambda (x) (<= x (caddar List))) (cdr List)))
              (list (car List))
-             (sort_scores_aux (filtro_scores (lambda (x) (> x (cadar List))) (cdr List))))
+             (sort_scores_aux (filtro-scores (lambda (x) (> x (caddar List))) (cdr List))))
         )
     )
 )
 
-(define (filtro_scores condicion List)
+(define (filtro-scores condicion List)
     (cond
         ((null? List) '())
-        ((condicion (cadar List)) (cons (car List) (filtro_scores condicion (cdr List))))
-        (else (filtro_scores condicion (cdr List)))
+        ((condicion (caddar List)) (cons (car List) (filtro-scores condicion (cdr List))))
+        (else (filtro-scores condicion (cdr List)))
     )
 )
+
+(define (filtro-3 condicion List )
+    (cond
+        ((null? List) '())
+        ((condicion (car(cdddar List))) (cons (car List) (filtro-3 condicion (cdr List))))
+        (else (filtro-3 condicion (cdr List)))
+    )
+)
+|#
 (define (get-n-data List n)
   (cond
     ((zero? n) '())
     (else (cons (car List) (get-n-data (cdr List) (- n 1))))
-
-
   )
 )
-;(define a (BCEj1 '(Brian Brian2 Brian3)))
+(define (get-data-by-pos generic-list n)
+  (cond
+    ((>= n (length generic-list)) "no me hagas esto boludo")
+    ((zero? n) (car generic-list))
+    (else
+     (get-data-by-pos (cdr generic-list) (- n 1))
+    )
+  )
+)
+;(change-player-list board-list new-players)
+(define (set-crupier-first-aux player-list)
+   (cond
+    ((equal? 'crupier (current-player-name player-list)) player-list)
+    (else (set-crupier-first-aux (append (cdr player-list) (list (car player-list)))))
+  )
+)
+(define (set-crupier-first board-list)
+  (change-player-list board-list (set-crupier-first-aux (get-players board-list)))
+)
+
+#|
+(evaluate-as (add-card-values (current-player-cards (get-players board-list)))
+                          (char-appearances (current-player-cards (get-players board-list)) 0)
+             )
+|#
+(define (crupier-IA board-list)
+  (cond
+    ((<= (evaluate-as (add-card-values (current-player-cards (get-players board-list)))
+                      (char-appearances (current-player-cards (get-players board-list)) 0))
+         16)
+     (crupier-IA (hand-out board-list 1))
+    )
+    (else
+     board-list
+    )
+  )
+)
+
 ;(hand-out a 2)
 ;(hand-out-circle a 8)
-

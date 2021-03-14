@@ -44,8 +44,7 @@
 
                     [callback (lambda (button event)
                                 (set! board-list (hand-out board-list 1))
-                                (write board-list)
-                                (draw-everyone-cards (get-players board-list))
+                                (draw-everyone-cards (get-players board-list) #f)
 
                            )]
                     ))
@@ -55,13 +54,18 @@
                     [label "Plantarse"]
                     [horiz-margin 20]
                     [callback (lambda (button event)
-
-                                (set! board-list (set-stay board-list))
-                                (draw-everyone-cards (get-players board-list))
-
-
-                    )]))
-
+                                (cond
+                                  ((everyone-done? (get-players board-list))
+                                   (set! board-list (crupier-IA (set-crupier-first board-list)))
+                                   
+                                   (draw-everyone-cards (get-players board-list) #t)
+                                   (writeln (sort-scores(get-scores (get-players board-list))))
+                                  )
+                                  (else
+                                   (set! board-list (set-stay board-list))
+                                  ; (writeln board-list)
+                                  )
+                    ))]))
 
 (define pass (new button%
                     [parent row1]
@@ -69,16 +73,22 @@
                     [horiz-margin 20]
                     [callback (lambda (button event)
                                 (set! board-list (pass-turn board-list))
-                                (draw-everyone-cards (get-players board-list))
-
+                                (writeln board-list)
                                 )]))
 
 (define show-cards (new button%
                     [parent row1]
                     [label "Repartir"]
                     [horiz-margin 20]
-                    [callback (lambda (button event) (draw-everyone-cards (get-players board-list))
-                    )]))
+                    [callback (lambda (button event)
+                                (draw-everyone-cards (get-players board-list) #f)
+                                (draw-image "Deck/52.png" 687 11 0.38001)
+                                (draw-image "Deck/52.png" 690 11 0.38001)
+                                (draw-image "Deck/52.png" 693 11 0.38001)
+                                (draw-image "Deck/52.png" 696 11 0.38001)
+                                (draw-image "Deck/52.png" 700 11 0.38001)
+                    )]
+                    ))
 (define drawer (send mcan get-dc))
 
 
@@ -97,9 +107,7 @@
   (set! player-list (append '(crupier) players))
   (set! positions (get-n-data positions (+ (length players) 1)))
   (write positions)
-  (draw-everyone-cards (get-players board-list))
-
-  
+  (draw-everyone-cards (get-players board-list) #f)
   
 )
 
@@ -108,19 +116,16 @@
     ((empty? card-list) '())
     (else (draw-image (create-path (car card-list)) X Y 0.38)
           (draw-cards (cdr card-list) (+ X 15) Y)
-
-
-
      )
 
    )
 
 )
-(define (draw-everyone-cards players)
+(define (draw-everyone-cards players finished)
   (cond
     ((empty? players) '())
-    (else (draw-all-cards (current-player-name players) (current-player-cards players))
-          (draw-everyone-cards (cdr players))
+    (else (draw-all-cards (current-player-name players) (current-player-cards players) finished)
+          (draw-everyone-cards (cdr players) finished)
      )
 
 
@@ -128,10 +133,19 @@
 
 
 )
-(define (draw-all-cards player-name player-cards)
-  (draw-cards player-cards
-              (car (get-coords player-name player-list positions))
-              (cadr (get-coords player-name player-list positions))
+(define (draw-all-cards player-name player-cards finished)
+  (cond
+    ((and (equal? player-name 'crupier) (not finished))
+     (draw-cards
+      (append '(52) (cdr player-cards))
+      (car (get-coords player-name player-list positions))
+      (cadr (get-coords player-name player-list positions)))
+    )
+    (else
+     (draw-cards player-cards
+                (car (get-coords player-name player-list positions))
+                (cadr (get-coords player-name player-list positions)))
+    )
   )
 )
 (define (get-coords player players-names coords-list)
@@ -140,9 +154,8 @@
     (else (get-coords player (cdr players-names) (cdr coords-list)))
 
   )
-
 )
 
 (define (create-path n)
   (string-append "Deck/" (number->string n) ".png"))
- 
+
