@@ -167,12 +167,12 @@
       (list (list
              (current-player-name players)
              (evaluate-as (add-card-values (current-player-cards players))
-                          (char-appearances (current-player-cards players) 0)
+                          (char-appearances (current-player-cards players) '(0 13 26 39))
              )
              (-
               {evaluate-as
                          (add-card-values (current-player-cards players))
-                         (char-appearances (current-player-cards players) 0)
+                         (char-appearances (current-player-cards players) '(0 13 26 39))
               }21
              )
              
@@ -211,14 +211,21 @@
     (else (+ 1 middle))
   )
 )
-
-(define (char-appearances List character)
+(define (char-appearances List character-list)
   (cond
-    ((empty? List) 0)
-    ((equal? character (car List)) (+ 1 (char-appearances (cdr List) character)))
-    (else (char-appearances (cdr List) character))
+    ((empty? character-list) 0)
+    (else (+ (char-appearances-aux List (car character-list) )  (char-appearances List (cdr character-list))))
+
   )
 )
+(define (char-appearances-aux List character)
+  (cond
+    ((empty? List) 0)
+    ((equal? character (car List)) (+ 1 (char-appearances-aux (cdr List) character)))
+    (else (char-appearances-aux (cdr List) character))
+  )
+)
+
 
 (define (everyone-done? players)
   (cond
@@ -261,7 +268,11 @@
     )
 )
 (define (sort-scores List)
-   (quicksort List 2)
+   (sort-scores-table (quicksort List 2))
+)
+(define (sort-scores-table table-values)
+  (append (quicksort (filtro zero? table-values 2) 3) (reverse (filtro negative? table-values 2)) (filtro positive? table-values 2))
+
 )
 
 
@@ -320,15 +331,11 @@
   (change-player-list board-list (set-crupier-first-aux (get-players board-list)))
 )
 
-#|
-(evaluate-as (add-card-values (current-player-cards (get-players board-list)))
-                          (char-appearances (current-player-cards (get-players board-list)) 0)
-             )
-|#
+
 (define (crupier-IA board-list)
   (cond
     ((<= (evaluate-as (add-card-values (current-player-cards (get-players board-list)))
-                      (char-appearances (current-player-cards (get-players board-list)) 0))
+                      (char-appearances (current-player-cards (get-players board-list)) '(0 13 26 39)))
          16)
      (crupier-IA (hand-out board-list 1))
     )

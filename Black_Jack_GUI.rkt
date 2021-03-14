@@ -7,6 +7,8 @@
 (define board-list '())
 (define player-list '())
 (define positions '((350 100) (130 290) (350 320) (580 290)))
+(define score-table '())
+(define font-size 30)
 (define image1 (make-object bitmap% "Blackjack.jpg"))
 (define my-frame  (new frame% [label "Black CE Jack"]
        [width 300]
@@ -24,7 +26,14 @@
 (define mcan (new mcan% (parent my-frame)
                   (min-width (image-width image1))
                   (min-height (image-height image1))))
+(define my-frame2  (new frame% [label "Black CE Jack"]
+       [width 300]
+       [height 400]
+       [style '(no-resize-border)]))
 
+(define mcan2 (new mcan% (parent my-frame2)
+                  (min-width (image-width image1))
+                  (min-height (image-height image1))) )
 
 
 
@@ -59,7 +68,12 @@
                                    (set! board-list (crupier-IA (set-crupier-first board-list)))
                                    
                                    (draw-everyone-cards (get-players board-list) #t)
-                                   (writeln (sort-scores(get-scores (get-players board-list))))
+                                   (set! score-table (sort-scores(get-scores (get-players board-list))))
+                                   
+                                   (set! drawer (send mcan2 get-dc))
+                                   (send drawer set-font (make-object font% font-size 'default))
+                                   (show-scores)
+                                    
                                   )
                                   (else
                                    (set! board-list (set-stay board-list))
@@ -73,22 +87,11 @@
                     [horiz-margin 20]
                     [callback (lambda (button event)
                                 (set! board-list (pass-turn board-list))
-                                (writeln board-list)
+                                ;(writeln board-list)
                                 )]))
 
-(define show-cards (new button%
-                    [parent row1]
-                    [label "Repartir"]
-                    [horiz-margin 20]
-                    [callback (lambda (button event)
-                                (draw-everyone-cards (get-players board-list) #f)
-                                (draw-image "Deck/52.png" 687 11 0.38001)
-                                (draw-image "Deck/52.png" 690 11 0.38001)
-                                (draw-image "Deck/52.png" 693 11 0.38001)
-                                (draw-image "Deck/52.png" 696 11 0.38001)
-                                (draw-image "Deck/52.png" 700 11 0.38001)
-                    )]
-                    ))
+
+
 (define drawer (send mcan get-dc))
 
 
@@ -106,8 +109,14 @@
   (send my-frame show #t)
   (set! player-list (append '(crupier) players))
   (set! positions (get-n-data positions (+ (length players) 1)))
-  (write positions)
+  ;(write positions)
+  (sleep/yield 1)
   (draw-everyone-cards (get-players board-list) #f)
+  (draw-image "Deck/52.png" 687 11 0.38001)
+  (draw-image "Deck/52.png" 690 11 0.38001)
+  (draw-image "Deck/52.png" 693 11 0.38001)
+  (draw-image "Deck/52.png" 696 11 0.38001)
+  (draw-image "Deck/52.png" 700 11 0.38001)
   
 )
 
@@ -122,7 +131,9 @@
 
 )
 (define (draw-everyone-cards players finished)
-  (cond
+  (writeln players)
+(cond
+    
     ((empty? players) '())
     (else (draw-all-cards (current-player-name players) (current-player-cards players) finished)
           (draw-everyone-cards (cdr players) finished)
@@ -130,16 +141,17 @@
 
 
   )
+  
 
 
 )
 (define (draw-all-cards player-name player-cards finished)
   (cond
-    ((and (equal? player-name 'crupier) (not finished))
+    ((and (equal? player-name "crupier") (not finished))
      (draw-cards
       (append '(52) (cdr player-cards))
-      (car (get-coords player-name player-list positions))
-      (cadr (get-coords player-name player-list positions)))
+      (car (get-coords "crupier" player-list positions))
+      (cadr (get-coords "crupier" player-list positions)))
     )
     (else
      (draw-cards player-cards
@@ -150,6 +162,7 @@
 )
 (define (get-coords player players-names coords-list)
   (cond
+    ((empty? players-names) '())
     ((equal? player (car players-names)) (car coords-list))
     (else (get-coords player (cdr players-names) (cdr coords-list)))
 
@@ -158,4 +171,28 @@
 
 (define (create-path n)
   (string-append "Deck/" (number->string n) ".png"))
+(define (draw-table table x y)
+  (cond
+    ((empty? table) '())
+    (else
+    
+       (send drawer draw-text (symbol->string (caar table)) x y)
+       (send drawer draw-text (number->string (cadar table)) (+ x (* font-size (string-length (symbol->string (caar table)) ) )) y)
+       (draw-table (cdr table) x (+ font-size y))
 
+
+     )
+
+
+   )
+
+)
+(define (show-scores)
+  (send my-frame show #f)
+  
+  (send my-frame2 show #t)
+  (sleep/yield 1)
+  (send drawer clear)
+  (draw-table score-table 40 50)
+  
+)
