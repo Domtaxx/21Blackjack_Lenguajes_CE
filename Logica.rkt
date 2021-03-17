@@ -1,6 +1,11 @@
-#lang racket 
-;(require "Black_Jack_GUI.rkt")
-;lista de jugadores((cards-available) ((jugado1 (cartas) state) (jugador2 (cartas) state) ...) )
+#lang racket
+#|
+Autores: Alejandro Vasquez Oviedo, Brian Wagemans Alvarado, Luis Andrey Zuñiga Hernandez
+Instituto Tecnologico de Costa Rica
+Area academica de ingenieria en computadores
+Game logic
+19 de marzo del 2021
+|#
  (require racket/trace)
 (provide (all-defined-out))
 (define (BCEj1 List)
@@ -275,36 +280,6 @@
 
 )
 
-
-#|
-(define (sort_scores_aux List)
-    (cond
-        ((null? List) '())
-        (else   
-            (append
-             (sort_scores_aux (filtro-scores (lambda (x) (<= x (caddar List))) (cdr List)))
-             (list (car List))
-             (sort_scores_aux (filtro-scores (lambda (x) (> x (caddar List))) (cdr List))))
-        )
-    )
-)
-
-(define (filtro-scores condicion List)
-    (cond
-        ((null? List) '())
-        ((condicion (caddar List)) (cons (car List) (filtro-scores condicion (cdr List))))
-        (else (filtro-scores condicion (cdr List)))
-    )
-)
-
-(define (filtro-3 condicion List )
-    (cond
-        ((null? List) '())
-        ((condicion (car(cdddar List))) (cons (car List) (filtro-3 condicion (cdr List))))
-        (else (filtro-3 condicion (cdr List)))
-    )
-)
-|#
 (define (get-n-data List n)
   (cond
     ((zero? n) '())
@@ -313,14 +288,14 @@
 )
 (define (get-data-by-pos generic-list n)
   (cond
-    ((>= n (length generic-list)) "no me hagas esto boludo")
+    ((>= n (length generic-list)) "se inserto un dato incorrecto")
     ((zero? n) (car generic-list))
     (else
      (get-data-by-pos (cdr generic-list) (- n 1))
     )
   )
 )
-;(change-player-list board-list new-players)
+
 (define (set-crupier-first-aux player-list)
    (cond
     ((equal? 'crupier (current-player-name player-list)) player-list)
