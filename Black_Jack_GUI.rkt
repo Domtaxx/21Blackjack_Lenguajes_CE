@@ -14,7 +14,7 @@ User Interface
 (provide (all-defined-out))
 
 ;Game-state Variables
-(define board-list '())
+(define board-list '()) ; ((cards-available) ((player1 (cards) state) ... ))
 (define player-list '())
 (define positions '((350 100) (130 290) (350 320) (580 290)))
 (define score-table '())
@@ -64,11 +64,15 @@ User Interface
                     [horiz-margin 20]
 
                     [callback (lambda (button event)
-                                (set! board-list (hand-out board-list 1))
-                                (draw-everyone-cards (get-players board-list) #f)
-                                (draw-image "Deck/52.png" 700 11 0.38001)
-                                (draw-text (number->string (length (get-deck board-list))) 40 "black" 720 40)
-
+                                (cond
+                                  ((= 0 (length (get-deck board-list))) (writeln "no hay cartas"))
+                                  (else   
+                                   (set! board-list (hand-out board-list 1))
+                                   (draw-everyone-cards (get-players board-list) #f)
+                                   (draw-image "Deck/52.png" 700 11 0.38001)
+                                   (draw-text (number->string (length (get-deck board-list))) 40 "black" 720 40)
+                                   )
+                                )
                            )]
                     ))
 
@@ -91,9 +95,7 @@ User Interface
                                     
                                   )
                                   (else
-                                   
                                    (draw-label (current-player-name (get-players board-list)) 20 50 90 50)
-                                  ; (writeln board-list)
                                   )
                     ))]))
 
@@ -103,9 +105,7 @@ User Interface
                     [horiz-margin 20]
                     [callback (lambda (button event)
                                 (set! board-list (pass-turn board-list))
-                                ;player-name x y width height
                                 (draw-label (current-player-name (get-players board-list)) 20 50 90 50)
-                                ;(writeln board-list)
                                 )]))
 
 #|
@@ -206,8 +206,6 @@ Autor: Alejandro Vasquez Oviedo, Brian Wagemans Alvarado, Andrey Zuñiga Hernand
         (send my-frame show #t)
         (set! player-list (append '(crupier) players))
         (set! positions (get-n-data positions (+ (length players) 1)))
-
-        ; (write positions)
         (sleep/yield 1)
         (send drawer set-font (make-object font% font-size 'default))
         (draw-everyone-cards (get-players board-list) #f)
@@ -283,9 +281,7 @@ output: #<void>
 Autor: Alejandro Vasquez Oviedo, Brian Wagemans Alvarado, Andrey Zuñiga Hernandez
 |#
 (define (draw-everyone-cards players finished)
-  (writeln players)
 (cond
-    
     ((empty? players) '())
     (else (draw-all-cards (current-player-name players) (current-player-cards players) finished)
           (draw-everyone-cards (cdr players) finished)
@@ -354,15 +350,13 @@ Autor: Andrey Zuñiga Hernandez
 )
 #|
 description: a function that shows the second windows, with the scores
-inputs: 
+inputs:
 output: #<void>
 Autor: Alejandro Vasquez Oviedo
 |#
 (define (show-scores)
-  (send my-frame show #f)
   (send my-frame2 show #t)
   (sleep/yield 1)
-  (send drawer clear)
   (draw-image "scoretable.png" 0 0 1)
   (draw-table score-table 250 90)
 )
