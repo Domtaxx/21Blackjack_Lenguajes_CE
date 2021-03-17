@@ -109,7 +109,17 @@
   (render-image (load-bitmap path factor) drawer x y)
 )
 
-
+#|
+description: a function that draws text to the screen
+inputs:
+  text: string? //a string to write in the screen
+  font-size: number? // a number to estlabish the size of the text
+  color: 
+  x:
+  y: 
+output: #t if it meets the criteria defined, #f otherwise
+Autor: Alejandro Vasquez Oviedo, Brian Wagemans Alvarado, Andrey Zuñiga Hernandez
+|#
 (define (draw-text text font-size color x y)
   (render-image (text/font
    text
@@ -124,24 +134,70 @@
   drawer x y)
 )
 
+#|
+description: a function that checks if the list only contains cuotes
+inputs:
+  players: List? //A list containing quotes 
+output: #t if it meets the criteria defined, #f otherwise
+Autor: Alejandro Vasquez Oviedo, Brian Wagemans Alvarado, Andrey Zuñiga Hernandez
+|#
+(define (check-quotes players)
+  (cond
+    ((empty? players) #t)
+    ((not(symbol? (car players))) #f)
+    (else (check-quotes (cdr players)))
+  )
+)
 
+#|
+description: a function that validates the list
+inputs:
+  players: List? //A list containing 1 to 3 quotes 
+output: #t if it meets the criteria defined, #f otherwise
+Autor: Alejandro Vasquez Oviedo, Brian Wagemans Alvarado, Andrey Zuñiga Hernandez
+|#
+(define (validate-list players)
+  (cond
+    ([not (list? players)] #f)
+    ((> (length players) 3) #f)
+    ((empty? players) #f)
+    ((not [check-quotes players]) #f)
+    (else #t)
+  )
+)
+
+#|
+description: a function that starts the game using the symbols from the list as names.
+inputs:
+  players: List? //A list containing 1 to 3 quotes 
+output: Starts the game
+Autor: Alejandro Vasquez Oviedo, Brian Wagemans Alvarado, Andrey Zuñiga Hernandez
+|#
 (define (BCEj players)
-  (set! board-list (start-game players))
-  (send my-frame show #t)
-  (set! player-list (append '(crupier) players))
-  (set! positions (get-n-data positions (+ (length players) 1)))
-  ;(write positions)
-  (sleep/yield 1)
-  (send drawer set-font (make-object font% font-size 'default))
-  (draw-everyone-cards (get-players board-list) #f)
-  (draw-image "Deck/52.png" 687 11 0.38001)
-  (draw-image "Deck/52.png" 690 11 0.38001)
-  (draw-image "Deck/52.png" 693 11 0.38001)
-  (draw-image "Deck/52.png" 696 11 0.38001)
-  (draw-image "Deck/52.png" 700 11 0.38001)
-  (draw-text (number->string (length (get-deck board-list))) 40 "black" 720 40)
-  (draw-players-names players (cdr positions))
-  (draw-label (car players) 20 50 90 50)
+  (cond
+   ((validate-list players); checks that the player list is a valid format for the game. 
+
+        ;(readys the variables to sart the game)
+        (set! board-list (start-game players))
+        (send my-frame show #t)
+        (set! player-list (append '(crupier) players))
+        (set! positions (get-n-data positions (+ (length players) 1)))
+
+        ; (write positions)
+        (sleep/yield 1)
+        (send drawer set-font (make-object font% font-size 'default))
+        (draw-everyone-cards (get-players board-list) #f)
+        (draw-image "Deck/52.png" 687 11 0.38001)
+        (draw-image "Deck/52.png" 690 11 0.38001)
+        (draw-image "Deck/52.png" 693 11 0.38001)
+        (draw-image "Deck/52.png" 696 11 0.38001)
+        (draw-image "Deck/52.png" 700 11 0.38001)
+        (draw-text (number->string (length (get-deck board-list))) 40 "black" 720 40)
+        (draw-players-names players (cdr positions))
+        (draw-label (car players) 20 50 90 50)
+        
+   )(else "lista de nombres no es valida") ;if its is not valid returns a message to the user
+  )
 )
 
 (define (draw-players-names players positions)
