@@ -159,7 +159,7 @@ Autor: Alejandro Vasquez Oviedo, Brian Wagemans Alvarado, Andrey Zuñiga Hernand
   drawer x y)
 )
 #|
-description: a function that checks if the list only contains cuotes
+description: a function that checks if the list only contains quotes
 inputs:
   players: List? //A list containing quotes 
 output: #t if it meets the criteria defined, #f otherwise
@@ -292,7 +292,7 @@ Autor: Alejandro Vasquez Oviedo, Brian Wagemans Alvarado, Andrey Zuñiga Hernand
 description: a function that draws the cards of the player
 inputs:
   player-name: string? // string that identifies the player
-  player-cards: list? // lsit that contains the cards of the player
+  player-cards: list? // list that contains the cards of the player
   finished: boolean? // boolean that represents if the game is finished
 output: #<void>
 Autor: Alejandro Vasquez Oviedo, Brian Wagemans Alvarado, Andrey Zuñiga Hernandez
@@ -313,7 +313,7 @@ Autor: Alejandro Vasquez Oviedo, Brian Wagemans Alvarado, Andrey Zuñiga Hernand
   )
 )
 #|
-description: a function that draws the cards of the player
+description: a function that gets the coordanates asociated to a player
 inputs:
   player-names: list? // list with the players names
   coords-list: list? // list that contains the coordanates of the player

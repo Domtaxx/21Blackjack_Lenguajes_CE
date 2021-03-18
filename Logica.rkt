@@ -587,7 +587,7 @@ Autor: Brian Wagemans Alvarado, Andrey Zuñiga Hernandez
 )
 
 #|
-description: a function that orders the list of scores
+description: a function that defines the behaviour of the crupier, with respect to the cards
 inputs:
   board-list: list? // board-state list 
 output: list // new board list, with the crupiers turn finished
